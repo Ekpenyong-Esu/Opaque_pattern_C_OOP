@@ -6,7 +6,7 @@ project(
     LANGUAGES C)
 
 # Global CMake variables are set here
-set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -91,6 +91,6 @@ install(
     RUNTIME DESTINATION bin)
 
 install(
-    TARGETS "LibFoo" "LibBar"
+    TARGETS "LibDeviceManager"
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib)

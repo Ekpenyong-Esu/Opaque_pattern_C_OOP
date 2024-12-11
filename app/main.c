@@ -1,56 +1,30 @@
-#include <stdbool.h>
 #include <stdio.h>
+#include "device_manager.h"
 
-#include <argparse.h>
-#include <log.h>
 
-#include "config.h"
+int main(void) {
+    DeviceManager* manager = device_manager_create();
 
-static const char *const usages[] = {
-    "basic [options] [[--] args]",
-    "basic [options]",
-    NULL,
-};
+    device_manager_add_device(manager, "LivingRoomLight", DEVICE_LIGHT, 1);
+    device_manager_add_device(manager, "Thermostat", DEVICE_THERMOSTAT, 2);
+    device_manager_add_device(manager, "FrontDoorCamera", DEVICE_CAMERA, 3);
 
-int main(int argc, const char **argv)
-{
-    log_info("Welcome to %s v%s\n", project_name, project_version);
+    printf("Initial Device List:\n");
+    device_manager_list_devices(manager);
 
-    int i = 0;
+    device_manager_set_device_state(manager, 1, true);
+    device_manager_set_device_attribute(manager, 2,  72);
 
-    int verbose = 0;
-    const char *path = NULL;
-    struct argparse_option options[] = {
-        OPT_HELP(),
-        OPT_GROUP("Program options"),
-        OPT_BOOLEAN('v', "verbose", &verbose, "To enable verbose output"),
-        OPT_STRING('f', "filename", &path, "Json Filepath"),
-        OPT_END(),
-    };
+    printf("\nUpdated Device List:\n");
+    device_manager_list_devices(manager);
 
-    struct argparse argparse;
-    argparse_init(&argparse, options, usages, 0);
-    argparse_describe(&argparse, "\nA brief description.", NULL);
-    (void)argparse_parse(&argparse, argc, argv);
-    if (verbose != 0)
-    {
-        printf("verbose: %d\n", verbose);
-    }
-    if (path != NULL)
-    {
-        printf("path: %s\n", path);
-    }
-    else
-    {
-        return -1;
-    }
+    device_manager_save(manager, "devices.txt");
+    device_manager_destroy(manager);
 
-    FILE *fp = fopen(path, "w");
+    printf("\nReloading Devices:\n");
+    manager = device_manager_load("devices.txt");
+    device_manager_list_devices(manager);
 
-    if (!fp)
-    {
-        return -1;
-    }
-
+    device_manager_destroy(manager);
     return 0;
 }
